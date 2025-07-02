@@ -12,7 +12,7 @@ MONOREPO_NAME="simply-turborepo"
 
 echo "📦 Checking Yarn..."
 if ! command -v yarn &> /dev/null; then
-  echo "❌ Yarn not found. Please install it first."
+  echo "❌ Yarn not found. Please install it first: https://classic.yarnpkg.com/lang/en/docs/install/"
   exit 1
 else
   echo "✅ Yarn is installed: $(yarn --version)"
@@ -25,14 +25,16 @@ cd $MONOREPO_NAME
 echo "📁 Creating folders..."
 mkdir -p apps/$APP_NAME/{mobile,desktop,backend} packages/shared
 
-echo "📦 Initializing Expo mobile app"
+echo "📦 Initializing Expo mobile app..."
 cd apps/$APP_NAME/mobile
-npx create-expo-app . --template blank --yes
+npx create-expo-app . --template blank --npm
 rm -f package-lock.json && rm -rf node_modules
 yarn install
 
-echo "📦 Adding Nativewind, Tailwind, SVG, Reanimated, WebView..."
-yarn add nativewind tailwindcss react-native-svg react-native-reanimated react-native-webview
+echo "📦 Installing Nativewind, Tailwind, SVG, Reanimated, WebView..."
+yarn add tailwindcss@3 react-native-svg
+yarn add nativewind react-native-reanimated react-native-webview
+
 npx tailwindcss init
 
 cat > tailwind.config.js <<EOF
@@ -75,11 +77,11 @@ export default function AnimatedBox() {
 EOF
 
 cd ../desktop
-echo "📦 Setting up Tauri Desktop Shell"
+echo "🖥️  Setting up Tauri Desktop Shell..."
 npx create-tauri-app . --template vanilla
 
 cd ../backend
-echo "📦 Setting up Django backend"
+echo "🐍 Setting up Django backend..."
 python3 -m venv env && source env/bin/activate
 pip install django
 django-admin startproject backend .
@@ -87,11 +89,12 @@ deactivate
 
 cd ../../../
 
-echo "📄 Adding README and Gitignore"
+echo "📝 Creating README and .gitignore..."
 cat > README.md <<EOF
 # $MONOREPO_NAME
 
 Full-stack cross-platform monorepo.
+
 - Mobile: React Native + Expo
 - Desktop: React Native + Tauri
 - Backend: Django + C++
@@ -106,6 +109,7 @@ __pycache__/
 apps/*/backend/env/
 EOF
 
+echo ""
 echo "✅ Done! Your monorepo is ready at $MONOREPO_NAME/apps/$APP_NAME"
 echo "➡️  Start mobile app:   cd apps/$APP_NAME/mobile && yarn start"
 echo "➡️  Start desktop app:  cd apps/$APP_NAME/desktop && yarn tauri dev"
