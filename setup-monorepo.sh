@@ -27,7 +27,7 @@ mkdir -p apps/$APP_NAME/{mobile,desktop,backend} packages/shared
 
 echo "📦 Initializing Expo mobile app..."
 cd apps/$APP_NAME/mobile
-npx create-expo-app . --template blank --npm
+npx create-expo-app . --template blank
 rm -f package-lock.json && rm -rf node_modules
 yarn install
 
