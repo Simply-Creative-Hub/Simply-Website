@@ -36,7 +36,7 @@ cat > package.json <<EOF
     "packages/*"
   ],
   "devDependencies": {
-    "turbo": "^1.12.0"
+    "turbo": "^1.13.4"
   }
 }
 EOF
@@ -54,10 +54,12 @@ cat > tsconfig.json <<EOF
 }
 EOF
 
-# Step 7: Initialize Expo mobile app
-echo "🌀 Initializing Expo mobile app"
+# Step 7: Initialize Expo mobile app (force Yarn and clean up lockfile)
+echo "🌀 Initializing Expo mobile app (with Yarn)"
 cd apps/$APP_NAME/mobile
 npx create-expo-app . --yes
+rm -f package-lock.json
+yarn install
 yarn add nativewind tailwindcss react-native-svg
 npx tailwindcss init
 cd ../../../..
@@ -65,7 +67,10 @@ cd ../../../..
 # Step 8: Set up Expo Web by copying from mobile
 echo "🌐 Linking Expo Web to mobile"
 cp -r apps/$APP_NAME/mobile/* apps/$APP_NAME/web/
-touch apps/$APP_NAME/web/web.config.js
+rm -f apps/$APP_NAME/web/package-lock.json
+cd apps/$APP_NAME/web
+yarn install
+cd ../../../..
 
 # Step 9: Set up desktop app shell with Tauri
 echo "🖥️ Setting up desktop shell with Tauri"
@@ -102,8 +107,8 @@ echo "📦 Dummy shared packages"
 echo "export const Button = () => null;" > packages/ui/index.ts
 echo "export const sum = (a, b) => a + b;" > packages/logic/index.ts
 
-# Step 13: Final install
-echo "📦 Installing all dependencies with Yarn"
+# Step 13: Final install at monorepo root
+echo "📦 Installing all root dependencies with Yarn"
 yarn install
 
 echo "✅ Setup complete: $MONOREPO_NAME created inside ~/Simply"
