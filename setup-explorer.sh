@@ -30,6 +30,9 @@ yarn add nativewind react-native-svg react-native-reanimated react-native-webvie
 echo "📦 Installing Tailwind CLI and PostCSS dependencies..."
 yarn add -D tailwindcss postcss autoprefixer
 
+echo "📦 Running yarn install to ensure binaries are available..."
+yarn install
+
 echo "🛠️ Initializing Tailwind config..."
 ./node_modules/.bin/tailwindcss init
 
