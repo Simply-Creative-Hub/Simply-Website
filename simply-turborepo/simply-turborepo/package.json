@@ -1,5 +1,5 @@
 {
-  "name": "cd simply-turborepo",
+  "name": "simply-turborepo",
   "private": true,
   "scripts": {
     "build": "turbo run build",
