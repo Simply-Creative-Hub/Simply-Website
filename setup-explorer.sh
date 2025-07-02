@@ -2,15 +2,15 @@
 
 set -e
 
-# Define paths relative to Simply/
+# Constants
 MONOREPO_DIR="simply-turborepo"
 APP_NAME="explorer"
 APP_DIR="$MONOREPO_DIR/apps/$APP_NAME"
 
 echo "📦 Checking Yarn..."
 if ! command -v yarn &> /dev/null; then
-    echo "❌ Yarn is not installed. Please install Yarn before proceeding."
-    exit 1
+  echo "❌ Yarn is not installed. Please install it before continuing."
+  exit 1
 fi
 echo "✅ Yarn is installed: $(yarn --version)"
 
@@ -19,24 +19,25 @@ mkdir -p "$APP_DIR/mobile"
 mkdir -p "$APP_DIR/desktop"
 mkdir -p "$APP_DIR/backend"
 
-### --- Mobile setup ---
-cd "$APP_DIR/mobile"
+# --- Mobile setup ---
 echo "📦 Setting up Expo mobile app for $APP_NAME..."
+cd "$APP_DIR/mobile"
 npx create-expo-app . --template blank
 
-echo "📦 Installing Nativewind, Tailwind, SVG, Reanimated, WebView..."
-yarn add nativewind react-native-svg react-native-reanimated react-native-webview
-
-echo "📦 Installing Tailwind CLI and PostCSS dependencies..."
-yarn add -D tailwindcss postcss autoprefixer
+echo "📦 Adding Nativewind, Tailwind, SVG, Reanimated, WebView..."
+yarn add nativewind tailwindcss react-native-svg react-native-reanimated react-native-webview
 
 echo "📦 Running yarn install to ensure binaries are available..."
 yarn install
 
 echo "🛠️ Initializing Tailwind config..."
-./node_modules/.bin/tailwindcss init
+if [ -f "./node_modules/.bin/tailwindcss" ]; then
+  ./node_modules/.bin/tailwindcss init
+else
+  echo "⚠️ Tailwind binary not found. Skipping tailwind.config.js generation."
+fi
 
-# Write tailwind.config.js
+echo "🛠️ Writing custom Tailwind config and app.json..."
 cat > tailwind.config.js <<EOF
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -48,7 +49,6 @@ module.exports = {
 }
 EOF
 
-# Write app.json with Nativewind plugin
 cat > app.json <<EOF
 {
   "expo": {
@@ -64,12 +64,12 @@ cat > app.json <<EOF
 }
 EOF
 
-### --- Desktop setup ---
+# --- Desktop setup ---
 echo "📦 Setting up Tauri desktop app for $APP_NAME..."
 cd "$APP_DIR/desktop"
 npm create tauri-app -- --template vanilla
 
-### --- Backend setup ---
+# --- Backend setup ---
 echo "📦 Setting up Django backend for $APP_NAME..."
 cd "$APP_DIR/backend"
 python3 -m venv env
@@ -78,30 +78,20 @@ pip install django
 django-admin startproject backend .
 deactivate
 
-### --- Link app in turbo.json ---
-cd ../../../..  # Back to Simply/
-
-echo "🔗 Linking $APP_NAME in turbo.json..."
-TURBO_FILE="$MONOREPO_DIR/turbo.json"
-if [ -f "$TURBO_FILE" ]; then
-  if ! grep -q "\"apps/$APP_NAME\"" "$TURBO_FILE"; then
-    TMP_FILE=$(mktemp)
-    jq ".pipeline.build.inputs |= (.| if . == null then [\"apps/$APP_NAME/**\"] else . + [\"apps/$APP_NAME/**\"] | unique end)" "$TURBO_FILE" > "$TMP_FILE"
-    mv "$TMP_FILE" "$TURBO_FILE"
-    echo "✅ Added apps/$APP_NAME to turbo.json inputs."
-  else
-    echo "ℹ️  apps/$APP_NAME already listed in turbo.json"
-  fi
+# --- Register in turbo.json ---
+cd "../../../../"  # Back to Simply/
+TURBO_JSON="$MONOREPO_DIR/turbo.json"
+if [ -f "$TURBO_JSON" ]; then
+  echo "🔗 Registering $APP_NAME in turbo.json..."
+  TMP_FILE=$(mktemp)
+  jq --arg app "$APP_NAME" '.pipeline += {($app): {"dependsOn":["^"], "outputs":["dist/**", "build/**"]}}' "$TURBO_JSON" > "$TMP_FILE" && mv "$TMP_FILE" "$TURBO_JSON"
 else
-  echo "⚠️  turbo.json not found. Skipping linking."
+  echo "⚠️ turbo.json not found, skipping linking."
 fi
 
-### --- Final instructions ---
+# --- Done ---
 echo ""
-echo "✅ Done! You can now:"
-echo "➡️  Start mobile app:   cd $APP_DIR/mobile && yarn start"
-echo "➡️  Start desktop app:  cd $APP_DIR/desktop && yarn tauri dev"
-echo "➡️  Start backend API:  cd $APP_DIR/backend && source env/bin/activate && python manage.py runserver"
-
-
-
+echo "✅ Setup complete!"
+echo "➡️  Mobile:   cd $APP_DIR/mobile && yarn start"
+echo "➡️  Desktop:  cd $APP_DIR/desktop && yarn tauri dev"
+echo "➡️  Backend:  cd $APP_DIR/backend && source env/bin/activate && python manage.py runserver"
