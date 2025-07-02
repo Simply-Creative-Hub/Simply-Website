@@ -1,114 +1,112 @@
 #!/bin/bash
-
 set -e
 
-MONOREPO_NAME="simply-turborepo"
-APP_NAME="myapp"
-
-# Step 1: Ensure Yarn (Classic) is installed
-if ! command -v yarn &> /dev/null; then
-  echo "📦 Yarn not found. Installing Yarn Classic..."
-  npm install -g yarn
-else
-  echo "📦 Yarn is already installed: $(yarn --version)"
+# Ask for app name
+read -p "Enter the name of your main app (e.g. main-app): " APP_NAME
+if [ -z "$APP_NAME" ]; then
+  echo "❌ App name is required. Exiting."
+  exit 1
 fi
 
-# Step 2: Create the monorepo with Turbo, using Yarn
-echo "📦 Creating monorepo: $MONOREPO_NAME with Yarn..."
-npx create-turbo@latest $MONOREPO_NAME --package-manager yarn
+MONOREPO_NAME="simply-turborepo"
+
+echo "📦 Checking Yarn..."
+if ! command -v yarn &> /dev/null; then
+  echo "❌ Yarn not found. Please install it first."
+  exit 1
+else
+  echo "✅ Yarn is installed: $(yarn --version)"
+fi
+
+echo "📦 Creating monorepo: $MONOREPO_NAME"
+npx create-turbo@latest $MONOREPO_NAME --package-manager=yarn
 cd $MONOREPO_NAME
 
-# Step 3: Create folder structure
-echo "📁 Creating app folders for: $APP_NAME"
-mkdir -p apps/$APP_NAME/{mobile,web,desktop,backend}
-mkdir -p packages/{ui,logic,python,cpp,native-modules,config}
+echo "📁 Creating folders..."
+mkdir -p apps/$APP_NAME/{mobile,desktop,backend} packages/shared
 
-# Step 4: Clean default apps
-rm -rf apps/docs apps/web || true
-
-# Step 5: Write root package.json with Yarn workspaces
-cat > package.json <<EOF
-{
-  "name": "$MONOREPO_NAME",
-  "private": true,
-  "workspaces": [
-    "apps/*/*",
-    "packages/*"
-  ],
-  "devDependencies": {
-    "turbo": "^1.13.4"
-  }
-}
-EOF
-
-# Step 6: Write root tsconfig.json
-cat > tsconfig.json <<EOF
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@ui/*": ["packages/ui/*"],
-      "@logic/*": ["packages/logic/*"]
-    }
-  }
-}
-EOF
-
-# Step 7: Initialize Expo mobile app (force Yarn and clean up lockfile)
-echo "🌀 Initializing Expo mobile app (with Yarn)"
+echo "📦 Initializing Expo mobile app"
 cd apps/$APP_NAME/mobile
-npx create-expo-app . --yes
-rm -f package-lock.json
+npx create-expo-app . --template blank --yes
+rm -f package-lock.json && rm -rf node_modules
 yarn install
-yarn add nativewind tailwindcss react-native-svg
+
+echo "📦 Adding Nativewind, Tailwind, SVG, Reanimated, WebView..."
+yarn add nativewind tailwindcss react-native-svg react-native-reanimated react-native-webview
 npx tailwindcss init
-cd ../../../..
 
-# Step 8: Set up Expo Web by copying from mobile
-echo "🌐 Linking Expo Web to mobile"
-cp -r apps/$APP_NAME/mobile/* apps/$APP_NAME/web/
-rm -f apps/$APP_NAME/web/package-lock.json
-cd apps/$APP_NAME/web
-yarn install
-cd ../../../..
-
-# Step 9: Set up desktop app shell with Tauri
-echo "🖥️ Setting up desktop shell with Tauri"
-cd apps/$APP_NAME/desktop
-cargo install create-tauri-app --force
-npx create-tauri-app . --template vanilla
-cd ../../..
-
-# Step 10: Set up backend Django server
-echo "🐍 Setting up Django backend"
-cd apps/$APP_NAME/backend
-python3 -m venv env
-source env/bin/activate
-pip install django
-django-admin startproject backend .
-deactivate
-cd ../../..
-
-# Step 11: Shared Tailwind config package
-echo "⚙️ Creating shared Tailwind config"
-mkdir -p packages/config
-cat > packages/config/tailwind.config.js <<EOF
+cat > tailwind.config.js <<EOF
 module.exports = {
-  content: ["../../apps/**/*.{js,ts,jsx,tsx}"],
-  theme: {
-    extend: {},
-  },
+  content: ["./App.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: { extend: {} },
   plugins: [],
 }
 EOF
 
-# Step 12: Dummy shared packages
-echo "📦 Dummy shared packages"
-echo "export const Button = () => null;" > packages/ui/index.ts
-echo "export const sum = (a, b) => a + b;" > packages/logic/index.ts
+cat > babel.config.js <<EOF
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: ['nativewind/babel', 'react-native-reanimated/plugin'],
+  };
+};
+EOF
 
-# Step 13: Final install at monorepo root
-echo "📦 Installing all root dependencies with Yarn"
-yarn install
+mkdir -p src/components
+cat > src/components/AnimatedBox.js <<EOF
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { Pressable } from 'react-native';
 
-echo "✅ Setup complete: $MONOREPO_NAME created inside ~/Simply"
+export default function AnimatedBox() {
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  return (
+    <Pressable
+      onPress={() => {
+        scale.value = withTiming(scale.value === 1 ? 1.2 : 1, { duration: 300 });
+      }}
+    >
+      <Animated.View style={[{ width: 100, height: 100, backgroundColor: 'blue' }, animStyle]} />
+    </Pressable>
+  );
+}
+EOF
+
+cd ../desktop
+echo "📦 Setting up Tauri Desktop Shell"
+npx create-tauri-app . --template vanilla
+
+cd ../backend
+echo "📦 Setting up Django backend"
+python3 -m venv env && source env/bin/activate
+pip install django
+django-admin startproject backend .
+deactivate
+
+cd ../../../
+
+echo "📄 Adding README and Gitignore"
+cat > README.md <<EOF
+# $MONOREPO_NAME
+
+Full-stack cross-platform monorepo.
+- Mobile: React Native + Expo
+- Desktop: React Native + Tauri
+- Backend: Django + C++
+- Styling: Tailwind via Nativewind
+EOF
+
+cat > .gitignore <<EOF
+node_modules
+.env
+*.pyc
+__pycache__/
+apps/*/backend/env/
+EOF
+
+echo "✅ Done! Your monorepo is ready at $MONOREPO_NAME/apps/$APP_NAME"
+echo "➡️  Start mobile app:   cd apps/$APP_NAME/mobile && yarn start"
+echo "➡️  Start desktop app:  cd apps/$APP_NAME/desktop && yarn tauri dev"
+echo "➡️  Start backend API:  cd apps/$APP_NAME/backend && source env/bin/activate && python manage.py runserver"
