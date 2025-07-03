@@ -1,11 +1,16 @@
 #!/bin/bash
 set -e
 
-APP_NAME="explorer"
+read -p "Enter the name of the new app to add: " APP_NAME
+if [ -z "$APP_NAME" ]; then
+  echo "❌ App name is required. Exiting."
+  exit 1
+fi
+
 cd simply-turborepo
 
 echo "📁 Creating folders for $APP_NAME..."
-mkdir -p apps/$APP_NAME/{mobile,desktop,backend}
+mkdir -p apps/$APP_NAME/{mobile,web,desktop,backend}
 
 cd apps/$APP_NAME/mobile
 echo "📦 Initializing mobile app..."
@@ -38,6 +43,11 @@ module.exports = function (api) {
 };
 EOF
 
+cd ../web
+npx create-expo-app . --template blank
+rm -f package-lock.json && rm -rf node_modules
+yarn install
+
 cd ../desktop
 npx create-tauri-app . --template vanilla
 
@@ -49,4 +59,4 @@ deactivate
 
 cd ../../../..
 
-echo "✅ Explorer app is ready in apps/$APP_NAME"
+echo "✅ App '$APP_NAME' added to monorepo."
