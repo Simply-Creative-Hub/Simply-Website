@@ -1,0 +1,14 @@
+{
+  "name": "app3",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": ["desktop", "backend"],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^1.11.3"
+  }
+}
