@@ -1,7 +1,9 @@
 {
-  "extends": "@repo/typescript-config/react-library.json",
+  "extends": "../typescript-config/react-library.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "types": [ "nativewind/types" ]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
