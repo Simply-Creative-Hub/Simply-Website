@@ -1,2 +1,0 @@
-# Simply
-The Simply Monorepo.
