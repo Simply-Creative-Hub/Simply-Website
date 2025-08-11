@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  margin: 0;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #c9c5d4;
+  color: #303030;
+
+  /* Background + Text */
+  --color-background: #fafafa;
+  --color-text: #303030;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    background-color: #202020;
+    color: #fafafa;
+    --color-background: #303030;
+    --color-text: #fafafa;
+  }
+}
