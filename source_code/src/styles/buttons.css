@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  /* Primary Button */
+  --color-button-primary: #3a6ae6;
+  --color-button-primary-hover: #678ef4;
+  --color-button-primary-press: #2f51b9;
+
+  /* Secondary Button (Light) */
+  --color-button-secondary: #d6d6d6;
+  --color-button-secondary-hover: #e2e2e2;
+  --color-button-secondary-press: #b2b2b2;
+  --color-text: #fafafa;
+  --color-text-secondary: #303030;
+
+  /* Danger Button */
+  --color-button-danger: #ff1e56;
+  --color-button-danger-hover: #ff658b;
+  --color-button-danger-press: #d11a48;
+
+  /* Premium Button */
+  --color-button-premium: #6914d4;
+  --color-button-premium-hover: #814af1;
+  --color-button-premium-press: #462094;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Secondary Button (Dark) */
+    --color-text: #fafafa;
+    --color-text-secondary: #fafafa;
+    --color-button-secondary: #494949;
+    --color-button-secondary-hover: #706e6e;
+    --color-button-secondary-press: #303030;
+  }
+}
+.button {
+  font-size: 1.2rem;
+}
+
+.button-container {
+  height: 2rem;
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin: 0.5rem 0.25rem;
+}
+
+.primary {
+  background-color: var(--color-button-primary);
+  color: var(--color-text);
+  padding: 0.5rem 1rem;
+  border-bottom: 0.42em solid var(--color-button-primary-press);
+  color: var(--color-text);
+  border-radius: 0.5em;
+  cursor:pointer;
+}
+
+.primary:hover {
+  background-color: var(--color-button-primary-hover);
+}
+
+.primary:active {
+  background-color: var(--color-button-primary-press);
+  color: var(--color-text-press);
+  border-bottom: none;
+}
+
+.secondary {
+  background-color: var(--color-button-secondary);
+  padding: 0.5rem 1rem;
+  border-bottom: 0.42em solid var(--color-button-secondary-press);
+  color: var(--color-text--secondary);
+  border-radius: 0.5em;
+  cursor:pointer;
+}
+
+.secondary:hover {
+  background-color: var(--color-button-secondary-hover);
+}
+
+.secondary:active {
+  background-color: var(--color-button-secondary-press);
+  color: var(--color-text-press);
+  border-bottom: none;
+}
+
+.tertiary {
+  background-color: var(--color-button-tertiary);
+  color: var(--color-text);
+}
+.buttondanger {
+  background-color: var(--color-button-danger);
+  color: var(--color-text);
+}
+.buttonpremium {
+  background-color: var(--color-button-premium);
+  color: var(--color-text);
+}

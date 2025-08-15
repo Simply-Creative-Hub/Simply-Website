@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+.cover {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+  padding: 8rem;
+  background-image: radial-gradient(circle at 50% -20%, #aabdd3, #ffffff);
+  border-bottom: 0.5rem solid #dbdbdb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cover {
+    background-image: radial-gradient(circle at 50% -20%, #284868, #000);
+    border-bottom: 0.5rem solid #303030;
+  }
+}
+
+h1 {
+  font-size: 5rem;
+  font-weight: 700;
+  margin: 0;
+}
+p {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+}
+
+.covercolumn {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.longlogo {
+  max-width: 8rem;
+  text-align: left;
+}
+
+#coverlogo {
+  width: 25rem;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 50px #284aa1);
+  user-select: none;
+  touch-action: none; /* prevents scroll/jank on touch */
+}
+
+#coverlogo:hover {
+  filter: drop-shadow(0 0 50px rgb(0, 71, 238));
+}
+#coverlogo:active {
+  cursor: grabbing;
+}
+
+#covertext {
+  margin: 1rem 0;
+  width: 400px;
+}

@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+.header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 5rem;
+  background-color: #fafafa;
+  backdrop-filter: blur(10px);
+  border-bottom: #dbdbdb 2px solid;
+}
+
+.headernav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-self: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+.headerbutton {
+  background-color: transparent;
+  color: #303030;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 28px;
+  cursor: pointer;
+}
+.headerbutton:hover {
+  background-color: #dbdbdb80;
+  color: #303030;
+  filter: drop-shadow(0 0 50px #3a6ae6);
+}
+
+@media (prefers-color-scheme: dark) {
+  .headerbutton {
+    color: #fafafa;
+  }
+  .headerbutton:hover {
+    background-color: #30303080;
+    color: #fafafa;
+    filter: drop-shadow(0 0 50px #0048ff);
+  }
+  .header {
+    background-color: #00000080;
+    border-bottom: #00000080 2px solid;
+  }
+}

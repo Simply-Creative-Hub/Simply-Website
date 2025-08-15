@@ -1,0 +1,27 @@
+@import "tailwindcss";
+:root {
+  background-color: black;
+}
+.login-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  height: auto;
+  width: 42rem;
+  background-color: #303030;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 2rem;
+    padding: 4rem;
+}
+
+.logo {
+  width: 10rem;
+  height: auto;
+}
+
+form {
+  @apply flex flex-col;
+}
