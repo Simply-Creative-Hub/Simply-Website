@@ -1,4 +1,4 @@
-import SimplyLogInHeader from "./simplyloginheader";
+import SimplyLogInHeader from "../simplyloginheader";
 import '../styles/header.css';
 
 function SimplyHeader() {

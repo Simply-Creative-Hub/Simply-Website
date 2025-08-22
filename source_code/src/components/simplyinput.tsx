@@ -1,9 +1,9 @@
 import '../styles/input.css'
 
 interface SimplyInputProps {
-  placeholder: string;
-  type: "text" | "email" | "password";
-  value: string;
+  placeholder: string; // Placeholder text for the input
+  type: "text" | "email" | "password"; // Type of the input field
+  value?: string; // Current value of the input
   required?: boolean; // Optional prop to indicate if the input is required
 }
 

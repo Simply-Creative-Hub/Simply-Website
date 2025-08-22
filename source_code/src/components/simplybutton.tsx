@@ -1,9 +1,9 @@
 import '../styles/buttons.css'
 
 interface SimplyButtonProps {
-  text: string;
-  type: "primary" | "secondary" | "tertiary" | "danger" | "premium";
-  link: string;
+  text: string; //text to be displayed on the button
+  type: "primary" | "secondary" | "tertiary" | "danger" | "premium"; //chooses the color for the button
+  link: string; //link to be opened when the button is clicked
 }
 
 function SimplyButton(props: SimplyButtonProps) {
